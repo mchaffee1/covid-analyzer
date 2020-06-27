@@ -1,5 +1,6 @@
 import Foundation
 import SwiftCSV
+import Vapor
 
 struct StateRow {
     let date: DateComponents
@@ -25,3 +26,5 @@ struct StateRow {
 }
 
 extension StateRow: Equatable {}
+
+extension StateRow: Content {}

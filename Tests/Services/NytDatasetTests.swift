@@ -3,30 +3,30 @@ import XCTest
 
 @testable import App
 
-class NytLoaderTests: XCTestCase {
+class NytDatasetTests: XCTestCase {
     func testShouldLoadFile() {
-        let expectedStateRows = [
+        let expectedStateRows: [StateRow] = [
             StateRow(date: DateComponents(year: 2020, month: 1, day: 21),
                      state: "Washington",
                      fips: "53",
                      cases: 1,
-                     deaths: 0),
+                     deaths: 0)!,
             StateRow(date: DateComponents(year: 2020, month: 3, day: 23),
                      state: "Indiana",
                      fips: "18",
                      cases: 264,
-                     deaths: 12),
+                     deaths: 12)!,
             StateRow(date: DateComponents(year: 2020, month: 6, day: 26),
                      state: "Wyoming",
                      fips: "56",
                      cases: 1368,
-                     deaths: 20)
-        ]
+                     deaths: 20)!
+            ]
         guard let fileUrl = testBundleUrl(forResource: "us-states", withExtension: "csv") else {
             XCTFail("could not get fileUrl")
             return
         }
-        let stateRows = NytLoader().loadStates(from: fileUrl)
+        let stateRows = try? NytDataset(sourceFile: fileUrl).stateRows
 
         XCTAssertEqual(stateRows, expectedStateRows)
     }
