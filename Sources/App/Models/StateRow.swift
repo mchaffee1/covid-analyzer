@@ -3,13 +3,13 @@ import SwiftCSV
 import Vapor
 
 struct StateRow {
-    let date: DateComponents
+    let date: IsoDate
     let state: String
     let fips: String
     let cases: Int
     let deaths: Int
 
-    init?(date: DateComponents?, state: String?, fips: String?, cases: Int?, deaths: Int?) {
+    init?(date: IsoDate?, state: String?, fips: String?, cases: Int?, deaths: Int?) {
         guard let date = date,
             let state = state,
             let fips = fips,

@@ -29,7 +29,7 @@ class NytDataset: StateFileDataset {
         }
         return csv.namedRows
             .compactMap { row in
-            StateRow(date: DateComponents(isoDay: row["date"]),
+                StateRow(date: IsoDate(isoString: row["date"]),
                      state: row["state"],
                      fips: row["fips"],
                      cases: Int(row["cases"]),

@@ -6,17 +6,17 @@ import XCTest
 class NytDatasetTests: XCTestCase {
     func testShouldLoadFile() {
         let expectedStateRows: [StateRow] = [
-            StateRow(date: DateComponents(year: 2020, month: 1, day: 21),
+            StateRow(date: IsoDate(year: 2020, month: 1, day: 21),
                      state: "Washington",
                      fips: "53",
                      cases: 1,
                      deaths: 0)!,
-            StateRow(date: DateComponents(year: 2020, month: 3, day: 23),
+            StateRow(date: IsoDate(year: 2020, month: 3, day: 23),
                      state: "Indiana",
                      fips: "18",
                      cases: 264,
                      deaths: 12)!,
-            StateRow(date: DateComponents(year: 2020, month: 6, day: 26),
+            StateRow(date: IsoDate(year: 2020, month: 6, day: 26),
                      state: "Wyoming",
                      fips: "56",
                      cases: 1368,
