@@ -15,15 +15,9 @@ class InMemorySeriesDataset: SeriesDataset {
     private var seriesByFips: [String: SimpleSeries] = [:]
 
     func build(from rawDataset: [RawStateRow]) {
-        rawDataset
-            .compactMap { (stateRow)->(Location, IsoDate, Int, Int)? in
-                guard let location = locations.location(forFips: stateRow.fips) else { return nil }
-                return (location, stateRow.date, stateRow.cases, stateRow.deaths) }
-            .forEach { (location, date, cases, deaths)->() in
-                var series = seriesByFips[location.fips] ?? SimpleSeries(location: location)
-                series.days[date] = [.cases: cases, .deaths: deaths]
-                seriesByFips[location.fips] = series }
-        seriesByFips.forEach { fips, series in
+        rawDataset.forEach(transformAndLoad)
+
+        seriesByFips.forEach { fips, series in // TODO this could be so much nicer
             seriesByFips[fips] = {
                 var result = series
                 result = self.enrichWithNewCases(series: result)
@@ -31,6 +25,24 @@ class InMemorySeriesDataset: SeriesDataset {
                 return result
             }()
         }
+    }
+
+    private func getSeries(for location: Location) -> SimpleSeries {
+        return seriesByFips[location.fips] ?? SimpleSeries(location: location)
+    }
+
+    private func transformAndLoad(rawStateRow: RawStateRow) {
+        guard let location = locations.location(forFips: rawStateRow.fips) else {
+            return
+        }
+
+        let date = rawStateRow.date
+        let cases = rawStateRow.cases
+        let deaths = rawStateRow.deaths
+
+        var series = getSeries(for: location)
+        series.days[date] = [.cases: cases, .deaths: deaths]
+        seriesByFips[location.fips] = series
     }
 
     func getSeries(forFips fips: String) -> SimpleSeries? {

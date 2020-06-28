@@ -11,7 +11,9 @@ class NytDataset: RawDataset {
 
     private let sourceFile: URL
 
-    public init(locations: LocationsDataset, seriesDataset: SeriesDataset, sourceFile customUrl: URL? = nil) throws {
+    public init(locations: LocationsDataset,
+                seriesDataset: SeriesDataset,
+                sourceFile customUrl: URL? = nil) throws {
         self.sourceFile = customUrl ?? Class.resourceFileURL(forFilename: "us-states.csv")
         self.stateRows = loadStates(from: sourceFile, intoLocations: locations, intoSeries: seriesDataset)
     }
@@ -35,14 +37,5 @@ class NytDataset: RawDataset {
         }
         seriesDataset.build(from: rows)
         return rows
-    }
-}
-
-extension Int {
-    init?(_ string: String?) {
-        guard let string = string else {
-            return nil
-        }
-        self.init(string)
     }
 }

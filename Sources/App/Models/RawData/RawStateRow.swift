@@ -1,6 +1,5 @@
 import Foundation
 import SwiftCSV
-import Vapor
 
 struct RawStateRow {
     let date: IsoDate
@@ -24,14 +23,14 @@ struct RawStateRow {
         self.deaths = deaths
     }
 
-    var location: State {
+    var location: Location {
         State(fips: fips, name: state)
     }
 }
 
-extension RawStateRow: Equatable {}
+extension RawStateRow: Codable {}
 
-extension RawStateRow: Content {}
+extension RawStateRow: Equatable {}
 
 extension RawStateRow: Hashable {
     func hash(into hasher: inout Hasher) {

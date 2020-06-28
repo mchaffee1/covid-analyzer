@@ -20,28 +20,29 @@ class SeriesController {
         return response
     }
 }
-// TODO lighten this up
+
 struct SeriesResponse: Content {
     let location: LocationResponse
     var days: [DatePointResponse]
 
     init(_ series: Series) {
-        self.location = LocationResponse(location: series.location)
-        self.days = series.days
-            .keys.sorted()
+        let location = LocationResponse(location: series.location)
+        let days = series.days.keys
+            .sorted()
             .compactMap { date in
                 DatePointResponse(date: date, values: series.days[date])
         }
+        self.init(location: location, days: days)
     }
 
-    init(location: LocationResponse, datePoints: [DatePointResponse]) {
+    init(location: LocationResponse, days: [DatePointResponse]) {
         self.location = location
-        self.days = datePoints
+        self.days = days
     }
 
     func filtered(with filter: (DatePointResponse)->(Bool)) -> SeriesResponse {
         let filteredPoints = self.days.filter(filter)
-        return SeriesResponse(location: self.location, datePoints: filteredPoints)
+        return SeriesResponse(location: self.location, days: filteredPoints)
     }
 }
 

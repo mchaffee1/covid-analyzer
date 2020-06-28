@@ -8,3 +8,4 @@ class RawDataController {
     }
 }
 
+extension RawStateRow: Content {}
