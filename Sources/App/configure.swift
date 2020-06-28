@@ -30,5 +30,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Todo.self, database: .sqlite)
     services.register(migrations)
 
-    services.register(try NytDataset(), as: StateFileDataset.self)
+    let locations = InMemoryLocations()
+    services.register(locations, as: Locations.self)
+
+    services.register(try NytDataset(locations: locations), as: StateFileDataset.self)
 }

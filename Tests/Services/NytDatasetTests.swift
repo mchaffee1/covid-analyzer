@@ -26,13 +26,33 @@ class NytDatasetTests: XCTestCase {
             XCTFail("could not get fileUrl")
             return
         }
-        let stateRows = try? NytDataset(sourceFile: fileUrl).stateRows
+        let mockLocations = MockLocations()
+        let stateRows = try? NytDataset(locations: mockLocations, sourceFile: fileUrl).stateRows
 
         XCTAssertEqual(stateRows, expectedStateRows)
+        XCTAssertEqual(mockLocations.addCallCount, 3)
+        expectedStateRows
+            .map { $0.location }
+            .forEach { expectedLocation in
+                XCTAssertTrue(mockLocations.addedLocations
+                    .compactMap { $0 as? State }
+                    .contains(expectedLocation))
+        }
     }
 
     func testBundleUrl(forResource resourceName: String?, withExtension fileExtension: String?) -> URL? {
         let testBundle = Bundle(for: type(of: self ))
         return testBundle.url(forResource: resourceName, withExtension: fileExtension)
     }
+}
+
+class MockLocations: Locations {
+    var addCallCount = 0
+    var addedLocations = [Location]()
+    func add(_ location: Location) {
+        addCallCount += 1
+        addedLocations.append(location)
+    }
+
+    var all: [Location] = []
 }

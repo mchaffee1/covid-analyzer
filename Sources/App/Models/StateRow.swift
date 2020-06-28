@@ -23,8 +23,18 @@ struct StateRow {
         self.cases = cases
         self.deaths = deaths
     }
+
+    var location: State {
+        State(fips: fips, name: state)
+    }
 }
 
 extension StateRow: Equatable {}
 
 extension StateRow: Content {}
+
+extension StateRow: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(fips)
+    }
+}

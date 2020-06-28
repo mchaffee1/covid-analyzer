@@ -7,27 +7,33 @@ protocol StateFileDataset {
 }
 
 class NytDataset: StateFileDataset {
-    private(set) lazy var stateRows = loadStates(from: sourceFile)
+    private typealias Class = NytDataset
+    private(set) var stateRows: [StateRow] = []
 
+    private let locations: Locations
     private let sourceFile: URL
 
-    public init(sourceFile: URL? = nil) throws {
-        if let sourceFile = sourceFile {
-            self.sourceFile = sourceFile
-        } else {
-            let bundle = Bundle(for: type(of: self))
-            guard let sourceFile = bundle.url(forResource: "us-states", withExtension: "csv") else {
-                throw NSError(domain: "NytDataset", code: 404, userInfo: ["Message": "Could not resolve us-states.csv URL"])
-            }
-            self.sourceFile = sourceFile
+    public init(locations: Locations, sourceFile customUrl: URL? = nil) throws {
+        self.locations = locations
+        self.sourceFile = try customUrl ?? Class.getStateUrl()
+
+        self.stateRows = loadStates(from: sourceFile)
+    }
+
+    // TODO this better
+    private static func getStateUrl() throws -> URL {
+        let bundle = Bundle(for: Class.self)
+        guard let sourceFile = bundle.url(forResource: "us-states", withExtension: "csv") else {
+            throw NSError(domain: "NytDataset", code: 404, userInfo: ["Message": "Could not resolve us-states.csv URL"])
         }
+        return sourceFile
     }
 
     private func loadStates(from sourceUrl: URL) -> [StateRow] {
         guard let csv = try? CSV(url: sourceUrl) else {
             return []
         }
-        return csv.namedRows
+        let rows = csv.namedRows
             .compactMap { row in
                 StateRow(date: IsoDate(isoString: row["date"]),
                      state: row["state"],
@@ -35,6 +41,8 @@ class NytDataset: StateFileDataset {
                      cases: Int(row["cases"]),
                      deaths: Int(row["deaths"]))
         }
+        rows.forEach { locations.add($0.location) }
+        return rows
     }
 }
 
