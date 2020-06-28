@@ -16,14 +16,14 @@ class InMemorySeriesDataset: SeriesDataset {
     private var seriesByFips: [String: SimpleSeries] = [:]
 
     func build(from rawDataset: [StateRow]) {
-        rawDataset.compactMap { (stateRow)->(Location, IsoDate, Int, Int)? in
-            guard let location = locations.location(forFips: stateRow.fips) else { return nil }
-            return (location, stateRow.date, stateRow.cases, stateRow.deaths)
-        }.forEach { (location, date, cases, deaths)->() in
-            var series = seriesByFips[location.fips] ?? SimpleSeries(location: location)
-            series.days[date] = [.cases: cases, .deaths: deaths]
-            seriesByFips[location.fips] = series
-        }
+        rawDataset
+            .compactMap { (stateRow)->(Location, IsoDate, Int, Int)? in
+                guard let location = locations.location(forFips: stateRow.fips) else { return nil }
+                return (location, stateRow.date, stateRow.cases, stateRow.deaths) }
+            .forEach { (location, date, cases, deaths)->() in
+                var series = seriesByFips[location.fips] ?? SimpleSeries(location: location)
+                series.days[date] = [.cases: cases, .deaths: deaths]
+                seriesByFips[location.fips] = series }
         seriesByFips.forEach { fips, series in
             seriesByFips[fips] = {
                 var result = series
