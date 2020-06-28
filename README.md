@@ -3,16 +3,22 @@
 
 This server loads the CSV files kindly provided by the New York Times here: https://github.com/nytimes/covid-19-data
 
-At present there's no autofetch/autoload capabilities; one must update the file(s) in Sources/App/Resources before run/deploy.  :-/
+At present there's no autofetch/autoload capabilities; one must update the file(s) in `Sources/App/Resources` before run/deploy.  :-/
 
 This project should be pretty clean and self-contained; hopefully one need only run `vapor build --run` or `vapor xcode` to have something to work with.
 
-At present the thing provides NYT data by location/date for:
+At present the service provides NYT data by location/date for:
 - cases
 - deaths
+
 plus derived values for
 - new cases
 - 7-day average of new cases
-Obviously there's lots more to do but I feel like this is off to a decent start.
+
+Obviously there's lots more to do but I feel like this is off to a decent start.  Planned enhancements include:
+- auto-fetch NYT data
+- Include population by state (possibly by county? feels ambitious) for e.g. cases/100k metrics and the like
+- Dockerization/Productionization
+- General beautification
 
 PRs are super-welcome!
