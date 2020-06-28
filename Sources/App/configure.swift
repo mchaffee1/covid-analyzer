@@ -12,12 +12,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
 
-    let locations = InMemoryLocations()
-    services.register(locations, as: Locations.self)
+    let locations = InMemoryLocationsDataset()
+    services.register(locations, as: LocationsDataset.self)
 
     let seriesDataset = InMemorySeriesDataset(locations: locations)
     services.register(seriesDataset, as: SeriesDataset.self)
 
     services.register(try NytDataset(locations: locations, seriesDataset: seriesDataset),
-                      as: StateFileDataset.self)
+                      as: RawDataset.self)
 }

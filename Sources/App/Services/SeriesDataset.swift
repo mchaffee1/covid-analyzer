@@ -2,20 +2,20 @@ import Foundation
 import Vapor
 
 protocol SeriesDataset {
-    func build(from rawDataset: [StateRow])
+    func build(from rawDataset: [RawStateRow])
     func getSeries(forFips: String) -> SimpleSeries?
 }
 
 class InMemorySeriesDataset: SeriesDataset {
-    let locations: Locations
+    let locations: LocationsDataset
 
-    init(locations: Locations) {
+    init(locations: LocationsDataset) {
         self.locations = locations
     }
 
     private var seriesByFips: [String: SimpleSeries] = [:]
 
-    func build(from rawDataset: [StateRow]) {
+    func build(from rawDataset: [RawStateRow]) {
         rawDataset
             .compactMap { (stateRow)->(Location, IsoDate, Int, Int)? in
                 guard let location = locations.location(forFips: stateRow.fips) else { return nil }

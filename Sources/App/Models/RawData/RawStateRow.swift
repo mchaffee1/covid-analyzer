@@ -2,7 +2,7 @@ import Foundation
 import SwiftCSV
 import Vapor
 
-struct StateRow {
+struct RawStateRow {
     let date: IsoDate
     let state: String
     let fips: String
@@ -29,11 +29,11 @@ struct StateRow {
     }
 }
 
-extension StateRow: Equatable {}
+extension RawStateRow: Equatable {}
 
-extension StateRow: Content {}
+extension RawStateRow: Content {}
 
-extension StateRow: Hashable {
+extension RawStateRow: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(fips)
     }

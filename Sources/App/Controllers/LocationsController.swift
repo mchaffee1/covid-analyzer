@@ -3,9 +3,9 @@ import Vapor
 
 class LocationsController {
     func index(_ req: Request) throws -> [LocationResponse] {
-        let locations = try req.make(Locations.self)
+        let locationsDataset = try req.make(LocationsDataset.self)
 
-        return locations.all.map { LocationResponse(location: $0) }
+        return locationsDataset.all.map { LocationResponse(location: $0) }
     }
 }
 

@@ -5,18 +5,18 @@ import XCTest
 
 class NytDatasetTests: XCTestCase {
     func testShouldLoadFile() {
-        let expectedStateRows: [StateRow] = [
-            StateRow(date: IsoDate(year: 2020, month: 1, day: 21),
+        let expectedStateRows: [RawStateRow] = [
+            RawStateRow(date: IsoDate(year: 2020, month: 1, day: 21),
                      state: "Washington",
                      fips: "53",
                      cases: 1,
                      deaths: 0)!,
-            StateRow(date: IsoDate(year: 2020, month: 3, day: 23),
+            RawStateRow(date: IsoDate(year: 2020, month: 3, day: 23),
                      state: "Indiana",
                      fips: "18",
                      cases: 264,
                      deaths: 12)!,
-            StateRow(date: IsoDate(year: 2020, month: 6, day: 26),
+            RawStateRow(date: IsoDate(year: 2020, month: 6, day: 26),
                      state: "Wyoming",
                      fips: "56",
                      cases: 1368,
@@ -47,7 +47,7 @@ class NytDatasetTests: XCTestCase {
     }
 }
 
-class MockLocations: Locations {
+class MockLocations: LocationsDataset {
     var locationForFipsCallCount = 0
     var locationForFipsLastFips: String?
     var locationForFipsMockLocation: Location?
@@ -68,7 +68,7 @@ class MockLocations: Locations {
 }
 
 class MockSeriesDataset: SeriesDataset {
-    func build(from rawDataset: [StateRow]) {
+    func build(from rawDataset: [RawStateRow]) {
         //
     }
 

@@ -3,9 +3,9 @@ import Vapor
 class SeriesController {
     func index(_ req: Request) throws -> SeriesResponse {
         let fips = try req.query.getFips()
-        let dataset = try req.make(SeriesDataset.self)
+        let seriesDataset = try req.make(SeriesDataset.self)
 
-        guard let series = dataset.getSeries(forFips: fips) else {
+        guard let series = seriesDataset.getSeries(forFips: fips) else {
             throw Abort(.notFound, reason: "Could not retrieve series for fips \(fips)")
         }
         let filter: (DatePointResponse)->(Bool) = {
@@ -20,7 +20,7 @@ class SeriesController {
         return response
     }
 }
-
+// TODO lighten this up
 struct SeriesResponse: Content {
     let location: LocationResponse
     var days: [DatePointResponse]

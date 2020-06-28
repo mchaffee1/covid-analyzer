@@ -2,17 +2,17 @@ import Foundation
 import SwiftCSV
 import Vapor
 
-protocol StateFileDataset {
-    var stateRows: [StateRow] { get }
+protocol RawDataset {
+    var stateRows: [RawStateRow] { get }
 }
 
-class NytDataset: StateFileDataset {
+class NytDataset: RawDataset {
     private typealias Class = NytDataset
-    private(set) var stateRows: [StateRow] = []
+    private(set) var stateRows: [RawStateRow] = []
 
     private let sourceFile: URL
 
-    public init(locations: Locations, seriesDataset: SeriesDataset, sourceFile customUrl: URL? = nil) throws {
+    public init(locations: LocationsDataset, seriesDataset: SeriesDataset, sourceFile customUrl: URL? = nil) throws {
         self.sourceFile = try customUrl ?? Class.getStateUrl()
 
         self.stateRows = loadStates(from: sourceFile, intoLocations: locations, intoSeries: seriesDataset)
@@ -28,14 +28,14 @@ class NytDataset: StateFileDataset {
     }
 
     private func loadStates(from sourceUrl: URL,
-                            intoLocations locations: Locations,
-                            intoSeries seriesDataset: SeriesDataset) -> [StateRow] {
+                            intoLocations locations: LocationsDataset,
+                            intoSeries seriesDataset: SeriesDataset) -> [RawStateRow] {
         guard let csv = try? CSV(url: sourceUrl) else {
             return []
         }
         let rows = csv.namedRows
             .compactMap { row in
-                StateRow(date: IsoDate(isoString: row["date"]),
+                RawStateRow(date: IsoDate(isoString: row["date"]),
                      state: row["state"],
                      fips: row["fips"],
                      cases: Int(row["cases"]),

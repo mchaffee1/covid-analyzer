@@ -7,11 +7,11 @@ class InMemoryLocationsTests: XCTestCase {
     let mockLocation1 = MockLocation(fips: "fips1", name: "name1")
     let mockLocation2 = MockLocation(fips: "fips2", name: "name2")
 
-    var inMemoryLocations: InMemoryLocations!
+    var inMemoryLocations: InMemoryLocationsDataset!
 
     override func setUp() {
         super.setUp()
-        inMemoryLocations = InMemoryLocations()
+        inMemoryLocations = InMemoryLocationsDataset()
 
         inMemoryLocations.add(mockLocation1)
         inMemoryLocations.add(mockLocation2)

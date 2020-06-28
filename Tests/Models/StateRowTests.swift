@@ -5,7 +5,7 @@ import XCTest
 
 class StateRowTests: XCTestCase {
     func testShouldEmitProperLocation() {
-        let stateRow = StateRow(date: IsoDate(isoString: "2020-04-24"),
+        let stateRow = RawStateRow(date: IsoDate(isoString: "2020-04-24"),
                                 state: "Illinois",
                                 fips: "66",
                                 cases: 1,
