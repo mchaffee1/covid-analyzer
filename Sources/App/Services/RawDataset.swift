@@ -2,7 +2,7 @@ import Foundation
 import SwiftCSV
 import Vapor
 
-protocol RawDataset {
+protocol RawDataset: Dataset {
     var stateRows: [RawStateRow] { get }
 }
 
@@ -13,18 +13,8 @@ class NytDataset: RawDataset {
     private let sourceFile: URL
 
     public init(locations: LocationsDataset, seriesDataset: SeriesDataset, sourceFile customUrl: URL? = nil) throws {
-        self.sourceFile = try customUrl ?? Class.getStateUrl()
-
+        self.sourceFile = customUrl ?? Class.resourceFileURL(forFilename: "us-states.csv")
         self.stateRows = loadStates(from: sourceFile, intoLocations: locations, intoSeries: seriesDataset)
-    }
-
-    // TODO this better
-    private static func getStateUrl() throws -> URL {
-        let bundle = Bundle(for: Class.self)
-        guard let sourceFile = bundle.url(forResource: "us-states", withExtension: "csv") else {
-            throw NSError(domain: "NytDataset", code: 404, userInfo: ["Message": "Could not resolve us-states.csv URL"])
-        }
-        return sourceFile
     }
 
     private func loadStates(from sourceUrl: URL,
