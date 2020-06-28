@@ -1,23 +1,31 @@
 import Vapor
 
 class SeriesController {
-    func index(_ req: Request) throws -> SeriesResponse {
-        let fips = try req.query.getFips()
-        let seriesDataset = try req.make(SeriesDataset.self)
+    func index(_ request: Request) throws -> SeriesResponse {
+        let fips = try request.query.getFips()
+        let seriesDataset = try request.make(SeriesDataset.self)
 
         guard let series = seriesDataset.getSeries(forFips: fips) else {
             throw Abort(.notFound, reason: "Could not retrieve series for fips \(fips)")
         }
-        let filter: (DatePointResponse)->(Bool) = {
-            guard let startDate = IsoDate(isoString: req.query[String.self, at: "startDate"]) else {
-                return { _ in true }
-            }
-            return { datePointResponse in
-                datePointResponse.date >= startDate
-            }
-        }()
-        let response = SeriesResponse(series).filtered(with: filter)
+
+        let response = SeriesResponse(series)
+            .filtered(with: self.getFilters(for: request))
         return response
+    }
+
+    private typealias ResponseFilter = (DatePointResponse)->(Bool)
+
+    private func getFilters(for request: Request) -> ResponseFilter {
+        var filters: [ResponseFilter] = []
+        if let startDate = IsoDate(isoString: request.query[String.self, at: "startDate"]) {
+            filters.append({ $0.date >= startDate })
+        }
+        return { response in
+            filters
+                .map { filter in filter(response) }
+                .reduce(true) { $0 && $1 }
+        }
     }
 }
 
