@@ -1,5 +1,5 @@
 # covid-analyzer
-Vapor server that ingests NYT covid CSV and returns analysis data via REST API
+[Vapor](https://vapor.codes/) server that ingests NYT covid CSV and returns analysis data via REST API
 
 This server loads the CSV files kindly provided by the New York Times here: https://github.com/nytimes/covid-19-data
 
