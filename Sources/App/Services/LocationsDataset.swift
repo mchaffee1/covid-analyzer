@@ -1,5 +1,4 @@
 import Foundation
-import Vapor
 
 protocol LocationsDataset {
     var all: [Location] { get }
@@ -21,4 +20,3 @@ class InMemoryLocationsDataset: LocationsDataset {
     var all: [Location] { [Location](locations.values) }
 }
 
-extension InMemoryLocationsDataset: Service {}

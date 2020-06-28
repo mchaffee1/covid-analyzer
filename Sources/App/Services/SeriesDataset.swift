@@ -1,5 +1,4 @@
 import Foundation
-import Vapor
 
 protocol SeriesDataset {
     func build(from rawDataset: [RawStateRow])
@@ -75,8 +74,6 @@ class InMemorySeriesDataset: SeriesDataset {
         return result
     }
 }
-
-extension InMemorySeriesDataset: Service {}
 
 protocol RawDatapoint {
     

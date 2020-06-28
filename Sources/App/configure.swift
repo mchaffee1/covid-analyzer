@@ -1,6 +1,6 @@
 import Vapor
 
-/// Called before your application initializes.
+/// Called before the application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     let router = EngineRouter.default()
     try routes(router)
@@ -21,3 +21,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(try NytDataset(locations: locations, seriesDataset: seriesDataset),
                       as: RawDataset.self)
 }
+
+/// MARK: - Service Conformance
+/// We do this here instead of in the source files, so we can keep the service classes
+/// free of Vapor dependencies.
+extension NytDataset: Service {}
+
+extension InMemoryLocationsDataset: Service {}
+
+extension InMemorySeriesDataset: Service {}

@@ -1,6 +1,5 @@
 import Foundation
 import SwiftCSV
-import Vapor
 
 protocol RawDataset: Dataset {
     var stateRows: [RawStateRow] { get }
@@ -38,8 +37,6 @@ class NytDataset: RawDataset {
         return rows
     }
 }
-
-extension NytDataset: Service {}
 
 extension Int {
     init?(_ string: String?) {
