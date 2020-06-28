@@ -5,7 +5,7 @@ This server loads the CSV files kindly provided by the New York Times here: http
 
 At present there's no autofetch/autoload capabilities; one must update the file(s) in `Sources/App/Resources` before run/deploy.  :-/
 
-This project should be pretty clean and self-contained; hopefully one need only run `vapor build --run` or `vapor xcode` to have something to work with.
+This project should be pretty clean and self-contained; hopefully one need only run `vapor build --run` or `vapor xcode` to have something to work with.  Take a look at `routes.swift` to see what you can `curl` - a good first step is to `get /healthcheck` to make sure you're running.
 
 At present the service provides NYT data by location/date for:
 - cases
