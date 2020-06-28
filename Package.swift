@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "nyt-server",
+    name: "covid-analyzer",
     products: [
-        .library(name: "nyt-server", targets: ["App"]),
+        .library(name: "covid-analyzer", targets: ["App"]),
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
