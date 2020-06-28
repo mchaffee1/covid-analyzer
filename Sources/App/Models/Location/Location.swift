@@ -6,7 +6,7 @@ enum LocationType: String {
 
 extension LocationType: Codable {}
 
-protocol Location: Codable {
+protocol Location: Encodable {
     var type: LocationType { get }
     var fips: String { get }
     var name: String { get }

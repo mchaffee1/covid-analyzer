@@ -27,7 +27,8 @@ class NytDatasetTests: XCTestCase {
             return
         }
         let mockLocations = MockLocations()
-        let stateRows = try? NytDataset(locations: mockLocations, sourceFile: fileUrl).stateRows
+        let mockSeriesDataset = MockSeriesDataset()
+        let stateRows = try? NytDataset(locations: mockLocations, seriesDataset: mockSeriesDataset, sourceFile: fileUrl).stateRows
 
         XCTAssertEqual(stateRows, expectedStateRows)
         XCTAssertEqual(mockLocations.addCallCount, 3)
@@ -47,6 +48,15 @@ class NytDatasetTests: XCTestCase {
 }
 
 class MockLocations: Locations {
+    var locationForFipsCallCount = 0
+    var locationForFipsLastFips: String?
+    var locationForFipsMockLocation: Location?
+    func location(forFips fips: String) -> Location? {
+        locationForFipsCallCount += 1
+        locationForFipsLastFips = fips
+        return locationForFipsMockLocation
+    }
+
     var addCallCount = 0
     var addedLocations = [Location]()
     func add(_ location: Location) {
@@ -55,4 +65,14 @@ class MockLocations: Locations {
     }
 
     var all: [Location] = []
+}
+
+class MockSeriesDataset: SeriesDataset {
+    func build(from rawDataset: [StateRow]) {
+        //
+    }
+
+    func getSeries(forFips: String) -> SimpleSeries? {
+        return nil
+    }
 }

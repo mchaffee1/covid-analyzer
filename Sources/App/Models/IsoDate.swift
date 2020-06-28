@@ -56,3 +56,26 @@ extension IsoDate: RawRepresentable {
 extension IsoDate: Codable {}
 
 extension IsoDate: Equatable {}
+
+extension IsoDate: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(year)
+        hasher.combine(month)
+        hasher.combine(day)
+    }
+}
+
+extension IsoDate: Comparable {
+    // TODO validate month/day values, or else maybe leverage Date/Calendar?
+    static func < (lhs: IsoDate, rhs: IsoDate) -> Bool {
+        if lhs.year == rhs.year {
+            if lhs.month == rhs.month {
+                return lhs.day < rhs.day
+            } else {
+                return lhs.month < rhs.month
+            }
+        } else {
+            return lhs.year < rhs.year
+        }
+    }
+}

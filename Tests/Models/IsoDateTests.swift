@@ -19,4 +19,20 @@ class IsoDateTests: XCTestCase {
 
         XCTAssertEqual(isoDate.description, "2020-04-24")
     }
+
+    func testShouldReturnCorrectDifferenceForDifferentYear() {
+        XCTAssertTrue(IsoDate(isoString: "1992-04-24")! < IsoDate(isoString: "2020-04-24")!)
+    }
+
+    func testShouldReturnCorrectDifferenceForDifferentMonth() {
+        XCTAssertFalse(IsoDate(isoString: "1992-04-24")! < IsoDate(isoString: "1992-03-24")!)
+    }
+
+    func testShouldReturnCorrectDifferenceForDifferentDay() {
+        XCTAssertTrue(IsoDate(isoString: "1992-04-24")! < IsoDate(isoString: "1992-04-25")!)
+    }
+
+    func testShouldReturnCorrectDifferenceForSameDate() {
+        XCTAssertFalse(IsoDate(isoString: "1992-04-24")! < IsoDate(isoString: "1992-04-24")!)
+    }
 }

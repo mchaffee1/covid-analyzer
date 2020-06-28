@@ -33,5 +33,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     let locations = InMemoryLocations()
     services.register(locations, as: Locations.self)
 
-    services.register(try NytDataset(locations: locations), as: StateFileDataset.self)
+    let seriesDataset = InMemorySeriesDataset(locations: locations)
+    services.register(seriesDataset, as: SeriesDataset.self)
+
+    services.register(try NytDataset(locations: locations, seriesDataset: seriesDataset),
+                      as: StateFileDataset.self)
 }

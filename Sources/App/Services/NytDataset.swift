@@ -10,14 +10,12 @@ class NytDataset: StateFileDataset {
     private typealias Class = NytDataset
     private(set) var stateRows: [StateRow] = []
 
-    private let locations: Locations
     private let sourceFile: URL
 
-    public init(locations: Locations, sourceFile customUrl: URL? = nil) throws {
-        self.locations = locations
+    public init(locations: Locations, seriesDataset: SeriesDataset, sourceFile customUrl: URL? = nil) throws {
         self.sourceFile = try customUrl ?? Class.getStateUrl()
 
-        self.stateRows = loadStates(from: sourceFile)
+        self.stateRows = loadStates(from: sourceFile, intoLocations: locations, intoSeries: seriesDataset)
     }
 
     // TODO this better
@@ -29,7 +27,9 @@ class NytDataset: StateFileDataset {
         return sourceFile
     }
 
-    private func loadStates(from sourceUrl: URL) -> [StateRow] {
+    private func loadStates(from sourceUrl: URL,
+                            intoLocations locations: Locations,
+                            intoSeries seriesDataset: SeriesDataset) -> [StateRow] {
         guard let csv = try? CSV(url: sourceUrl) else {
             return []
         }
@@ -41,7 +41,10 @@ class NytDataset: StateFileDataset {
                      cases: Int(row["cases"]),
                      deaths: Int(row["deaths"]))
         }
-        rows.forEach { locations.add($0.location) }
+        rows.forEach {
+            locations.add($0.location)
+        }
+        seriesDataset.build(from: rows)
         return rows
     }
 }

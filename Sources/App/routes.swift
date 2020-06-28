@@ -23,4 +23,7 @@ public func routes(_ router: Router) throws {
 
     let locationsController = LocationsController()
     router.get("states", use: locationsController.index)
+
+    let seriesController = SeriesController()
+    router.get("series", use: seriesController.index)
 }
