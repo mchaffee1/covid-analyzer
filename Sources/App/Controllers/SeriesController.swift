@@ -2,12 +2,11 @@ import Vapor
 
 class SeriesController {
     func index(_ req: Request) throws -> SeriesResponse {
-        guard let fips = req.query[String.self, at: "fips"] else {
-            throw NSError(domain: "SeriesController", code: 404, userInfo: ["Message": "Could not extract FIPS parameter"])
-        }
+        let fips = try req.query.getFips()
         let dataset = try req.make(SeriesDataset.self)
+
         guard let series = dataset.getSeries(forFips: fips) else {
-            throw NSError(domain: "SeriesController", code: 404, userInfo: ["Message": "Could not retrieve series from dataset"])
+            throw Abort(.notFound, reason: "Could not retrieve series for fips \(fips)")
         }
         let filter: (DatePointResponse)->(Bool) = {
             guard let startDate = IsoDate(isoString: req.query[String.self, at: "startDate"]) else {
@@ -24,24 +23,24 @@ class SeriesController {
 
 struct SeriesResponse: Content {
     let location: LocationResponse
-    var datePoints: [DatePointResponse]
+    var days: [DatePointResponse]
 
     init(_ series: Series) {
         self.location = LocationResponse(location: series.location)
-        self.datePoints = series.datePoints
+        self.days = series.days
             .keys.sorted()
             .compactMap { date in
-                DatePointResponse(date: date, values: series.datePoints[date])
+                DatePointResponse(date: date, values: series.days[date])
         }
     }
 
     init(location: LocationResponse, datePoints: [DatePointResponse]) {
         self.location = location
-        self.datePoints = datePoints
+        self.days = datePoints
     }
 
     func filtered(with filter: (DatePointResponse)->(Bool)) -> SeriesResponse {
-        let filteredPoints = self.datePoints.filter(filter)
+        let filteredPoints = self.days.filter(filter)
         return SeriesResponse(location: self.location, datePoints: filteredPoints)
     }
 }
@@ -63,5 +62,14 @@ struct DatePointResponse: Content {
             }
             return result
         }()
+    }
+}
+
+extension QueryContainer {
+    func getFips() throws -> String {
+        guard let result = self[String.self, at: "fips"] else {
+            throw Abort(.badRequest, reason: "fips parameter is required")
+        }
+        return result
     }
 }

@@ -13,19 +13,19 @@ class InMemorySeriesDataset: SeriesDataset {
         self.locations = locations
     }
 
-    private var serieses: [String: SimpleSeries] = [:]
+    private var seriesByFips: [String: SimpleSeries] = [:]
 
     func build(from rawDataset: [StateRow]) {
         rawDataset.compactMap { (stateRow)->(Location, IsoDate, Int, Int)? in
             guard let location = locations.location(forFips: stateRow.fips) else { return nil }
             return (location, stateRow.date, stateRow.cases, stateRow.deaths)
         }.forEach { (location, date, cases, deaths)->() in
-            var series = serieses[location.fips] ?? SimpleSeries(location: location)
-            series.datePoints[date] = [.cases: cases, .deaths: deaths]
-            serieses[location.fips] = series
+            var series = seriesByFips[location.fips] ?? SimpleSeries(location: location)
+            series.days[date] = [.cases: cases, .deaths: deaths]
+            seriesByFips[location.fips] = series
         }
-        serieses.forEach { fips, series in
-            serieses[fips] = {
+        seriesByFips.forEach { fips, series in
+            seriesByFips[fips] = {
                 var result = series
                 result = self.enrichWithNewCases(series: result)
                 result = self.enrichWithNewCaseAverage(series: result)
@@ -35,18 +35,18 @@ class InMemorySeriesDataset: SeriesDataset {
     }
 
     func getSeries(forFips fips: String) -> SimpleSeries? {
-        return serieses[fips] ?? SimpleSeries(location: locations.location(forFips: fips))
+        return seriesByFips[fips] ?? SimpleSeries(location: locations.location(forFips: fips))
     }
 
     private func enrichWithNewCases(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        let dates = series.datePoints.keys.sorted()
+        let dates = series.days.keys.sorted()
         var lastCount = 0
         dates.forEach { date in
-            guard let currentCount = series.datePoints[date]?[.cases] else {
+            guard let currentCount = series.days[date]?[.cases] else {
                 return
             }
-            result.datePoints[date]?[.newCases] = currentCount - lastCount
+            result.days[date]?[.newCases] = currentCount - lastCount
             lastCount = currentCount
         }
         return result
@@ -54,8 +54,8 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private func enrichWithNewCaseAverage(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        let dateSet = series.datePoints.keys.sorted().map { date in
-            (date: date, newCases: series.datePoints[date]?[.newCases] ?? 0)
+        let dateSet = series.days.keys.sorted().map { date in
+            (date: date, newCases: series.days[date]?[.newCases] ?? 0)
         }.enumerated()
         dateSet.forEach {
             let minOffset = $0.offset - 6
@@ -70,7 +70,7 @@ class InMemorySeriesDataset: SeriesDataset {
                 .map { $0.element.newCases }
                 .reduce(0) { $0 + $1 }
                 / 7
-            result.datePoints[$0.element.date]?[.newCases7day] = average
+            result.days[$0.element.date]?[.newCases7day] = average
         }
         return result
     }

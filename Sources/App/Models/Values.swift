@@ -2,7 +2,7 @@ import Foundation
 
 protocol Series {
     var location: Location { get }
-    var datePoints: [IsoDate: Values] { get set } // TODO make nicer
+    var days: [IsoDate: Values] { get set } // TODO make nicer
 }
 
 typealias Values = [ValueType: Int]
@@ -19,7 +19,7 @@ extension ValueType: Codable {}
 struct SimpleSeries: Series {
     let location: Location
 
-    var datePoints: [IsoDate : Values] = [:]
+    var days: [IsoDate : Values] = [:]
 
     init?(location: Location?) {
         guard let location = location else {
