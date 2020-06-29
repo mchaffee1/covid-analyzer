@@ -6,11 +6,8 @@ public func routes(_ router: Router) throws {
         return "😃"
     }
 
-    let stateController = RawDataController()
-    router.get("raw-states", use: stateController.index)
-
     let locationsController = LocationsController()
-    router.get("states", use: locationsController.index)
+    router.get("locations", use: locationsController.index)
 
     let seriesController = SeriesController()
     router.get("series", use: seriesController.index)

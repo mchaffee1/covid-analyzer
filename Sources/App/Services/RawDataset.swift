@@ -2,12 +2,12 @@ import Foundation
 import SwiftCSV
 
 protocol RawDataset: Dataset {
-    var stateRows: [RawStateRow] { get }
+    var stateRows: [RawLoadableRow] { get }
 }
 
 class NytDataset: RawDataset {
     private typealias Class = NytDataset
-    private(set) var stateRows: [RawStateRow] = []
+    private(set) var stateRows: [RawLoadableRow] = []
 
     private let sourceFile: URL
 
@@ -20,22 +20,37 @@ class NytDataset: RawDataset {
 
     private func loadStates(from sourceUrl: URL,
                             intoLocations locations: LocationsDataset,
-                            intoSeries seriesDataset: SeriesDataset) -> [RawStateRow] {
+                            intoSeries seriesDataset: SeriesDataset) -> [RawLoadableRow] {
         guard let csv = try? CSV(url: sourceUrl) else {
             return []
         }
-        let rows = csv.namedRows
-            .compactMap { row in
-                RawStateRow(date: IsoDate(isoString: row["date"]),
-                            state: row["state"],
-                            fips: row["fips"],
-                            cases: Int(row["cases"]),
-                            deaths: Int(row["deaths"]))
-        }
-        rows.forEach {
-            locations.add($0.location)
+        let rows = csv.namedRows.compactMap(rawLoadableRow)
+
+        rows.forEach { row in
+            locations.add(self.location(from: row))
         }
         seriesDataset.build(from: rows)
         return rows
+    }
+
+    private func rawLoadableRow(from csvRow: [String: String]) -> RawLoadableRow? {
+        let date = IsoDate(isoString: csvRow["date"])
+        let state = csvRow["state"]
+        let fips = csvRow["fips"]
+        let cases = Int(csvRow["cases"])
+        let deaths = Int(csvRow["deaths"])
+
+        return RawLoadableRow(date: date,
+                              state: state,
+                              fips: fips,
+                              cases: cases,
+                              deaths: deaths)
+    }
+
+    private func location(from rawLoadableRow: RawLoadableRow) -> Location {
+        switch rawLoadableRow.locationType {
+        case .state:
+            return State(fips: rawLoadableRow.fips, name: rawLoadableRow.state)
+        }
     }
 }
