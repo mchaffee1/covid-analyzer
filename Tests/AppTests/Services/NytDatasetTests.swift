@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 import XCTest
 
 @testable import App
@@ -22,7 +23,7 @@ class NytDatasetTests: XCTestCase {
                      cases: 1368,
                      deaths: 20)!
             ]
-        guard let fileUrl = testBundleUrl(forResource: "us-states", withExtension: "csv") else {
+        guard let fileUrl = testFileUrl(for: "three-states.csv") else {
             XCTFail("could not get fileUrl")
             return
         }
@@ -37,13 +38,8 @@ class NytDatasetTests: XCTestCase {
             .forEach { expectedLocation in
                 XCTAssertTrue(mockLocations.addedLocations
                     .compactMap { $0 as? State }
-                    .contains(expectedLocation))
+                    .contains(expectedLocation as! State))
         }
-    }
-
-    func testBundleUrl(forResource resourceName: String?, withExtension fileExtension: String?) -> URL? {
-        let testBundle = Bundle(for: type(of: self ))
-        return testBundle.url(forResource: resourceName, withExtension: fileExtension)
     }
 }
 
@@ -68,7 +64,7 @@ class MockLocations: LocationsDataset {
 }
 
 class MockSeriesDataset: SeriesDataset {
-    func build(from rawDataset: [RawStateRow]) {
+    func build(from rawDataset: [RawLoadableRow]) {
         //
     }
 

@@ -11,6 +11,6 @@ class StateRowTests: XCTestCase {
                                 cases: 1,
                                 deaths: 2)
 
-        XCTAssertEqual(stateRow?.location, State(fips: "66", name: "Illinois"))
+        XCTAssertEqual(stateRow?.location as? State, State(fips: "66", name: "Illinois"))
     }
 }

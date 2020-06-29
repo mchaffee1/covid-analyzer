@@ -10,8 +10,6 @@ extension Dataset {
 
     static var resourceDirectoryURL: URL {
         let baseUrl = URL(fileURLWithPath: DirectoryConfig.detect().workDir)
-        let result = baseUrl.appendingPathComponent("Sources/App/Resources/")
-        print(result)
-        return result
+        return baseUrl.appendingPathComponent("Sources/App/Resources/")
     }
 }
