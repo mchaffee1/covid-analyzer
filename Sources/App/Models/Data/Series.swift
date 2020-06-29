@@ -1,6 +1,6 @@
 import Foundation
 
-protocol Series {
+protocol Series: Transformable {
     var location: Location { get }
     var days: [IsoDate: Values] { get set } // TODO make nicer
 }
@@ -19,5 +19,19 @@ struct SimpleSeries: Series {
 
     init(location: Location) {
         self.location = location
+    }
+
+    func transform(with transform: (SimpleSeries)->(SimpleSeries)) -> SimpleSeries {
+        return transform(self)
+    }
+}
+
+protocol Transformable {
+    func transform(with transform: (Self)->(Self)) -> Self
+}
+
+extension Transformable {
+    func transform(with transform: (Self)->(Self)) -> Self {
+        return transform(self)
     }
 }

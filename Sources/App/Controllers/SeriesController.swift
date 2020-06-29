@@ -33,7 +33,7 @@ struct SeriesResponse: Content {
     let location: LocationResponse
     var days: [DatePointResponse]
 
-    init(_ series: Series) {
+    init<SeriesType: Series>(_ series: SeriesType) {
         let location = LocationResponse(location: series.location)
         let days = series.days.keys
             .sorted()

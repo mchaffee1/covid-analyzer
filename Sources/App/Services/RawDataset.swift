@@ -27,10 +27,10 @@ class NytDataset: RawDataset {
         let rows = csv.namedRows
             .compactMap { row in
                 RawStateRow(date: IsoDate(isoString: row["date"]),
-                     state: row["state"],
-                     fips: row["fips"],
-                     cases: Int(row["cases"]),
-                     deaths: Int(row["deaths"]))
+                            state: row["state"],
+                            fips: row["fips"],
+                            cases: Int(row["cases"]),
+                            deaths: Int(row["deaths"]))
         }
         rows.forEach {
             locations.add($0.location)

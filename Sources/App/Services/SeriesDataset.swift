@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SeriesDataset {
-    func build(from rawDataset: [RawStateRow])
+    func build(from rawDataset: [RawLoadableRow])
     func getSeries(forFips: String) -> SimpleSeries?
 }
 
@@ -14,16 +14,13 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private var seriesByFips: [String: SimpleSeries] = [:]
 
-    func build(from rawDataset: [RawStateRow]) {
-        rawDataset.forEach(transformAndLoad)
+    func build(from rawDataset: [RawLoadableRow]) {
+        rawDataset.forEach(importRow)
 
-        seriesByFips.forEach { fips, series in // TODO this could be so much nicer
-            seriesByFips[fips] = {
-                var result = series
-                result = self.enrichWithNewCases(series: result)
-                result = self.enrichWithNewCaseAverage(series: result)
-                return result
-            }()
+        seriesByFips.forEach { fips, series in // TODO this could still be nicer
+            seriesByFips[fips] = series
+                .transform(with: self.enrichWithNewCases)
+                .transform(with: self.enrichWithNewCaseAverage)
         }
     }
 
@@ -31,14 +28,14 @@ class InMemorySeriesDataset: SeriesDataset {
         return seriesByFips[location.fips] ?? SimpleSeries(location: location)
     }
 
-    private func transformAndLoad(rawStateRow: RawStateRow) {
-        guard let location = locations.location(forFips: rawStateRow.fips) else {
+    private func importRow(rawLoadableRow: RawLoadableRow) {
+        guard let location = locations.location(forFips: rawLoadableRow.fips) else {
             return
         }
 
-        let date = rawStateRow.date
-        let cases = rawStateRow.cases
-        let deaths = rawStateRow.deaths
+        let date = rawLoadableRow.date
+        let cases = rawLoadableRow.cases
+        let deaths = rawLoadableRow.deaths
 
         var series = getSeries(for: location)
         series.days[date] = [.cases: cases, .deaths: deaths]
@@ -79,8 +76,7 @@ class InMemorySeriesDataset: SeriesDataset {
             }
             let average = sevenSet
                 .map { $0.element.newCases }
-                .reduce(0) { $0 + $1 }
-                / 7
+                .sum() / 7
             result.days[$0.element.date]?[.newCases7day] = average
         }
         return result

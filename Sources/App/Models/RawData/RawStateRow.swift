@@ -1,7 +1,7 @@
 import Foundation
 import SwiftCSV
 
-struct RawStateRow {
+struct RawStateRow: RawLoadableRow {
     let date: IsoDate
     let state: String
     let fips: String
