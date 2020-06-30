@@ -34,9 +34,9 @@ class NytDataset: RawDataset {
         }
         let rows = csv.namedRows.compactMap(rawLoadableRow)
 
-        rows.forEach { row in
-            locations.add(self.location(from: row))
-        }
+        rows.compactMap { try? self.location(from: $0) }
+            .forEach(locations.add)
+
         seriesDataset.importRows(from: rows)
         return rows
     }
@@ -57,13 +57,12 @@ class NytDataset: RawDataset {
                               deaths: deaths)
     }
 
-    private func location(from rawLoadableRow: RawLoadableRow) -> Location {
+    private func location(from rawLoadableRow: RawLoadableRow) throws -> Location {
         switch rawLoadableRow.locationType {
         case .state:
             return State(fips: rawLoadableRow.fips, name: rawLoadableRow.state)
         case .county:
-            // TODO lose the bang
-            return County(fips: rawLoadableRow.fips, name: rawLoadableRow.county!, state: rawLoadableRow.state)
+            return try County(fips: rawLoadableRow.fips, name: rawLoadableRow.county, state: rawLoadableRow.state)
         }
     }
 }

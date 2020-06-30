@@ -12,6 +12,17 @@ struct County: Location {
         case name
         case state
     }
+
+    init(fips: String?, name: String?, state: String?) throws {
+        guard let fips = fips,
+            let name = name,
+            let state = state else {
+                throw "Attempted incomplete initialization of County"
+        }
+        self.fips = fips
+        self.name = name
+        self.state = state
+    }
 }
 
 extension County: Codable {}

@@ -19,7 +19,7 @@ class InMemorySeriesDatasetTests: XCTestCase {
         inMemorySeriesDataset.importRows(from: eightDayStateSequence(forFips: stateFips))
 
         let countyFips = "countyFips"
-        mockLocationsDataset.mockLocationForFips = County(fips: countyFips, name: "mockCounty", state: "mockCountyState")
+        mockLocationsDataset.mockLocationForFips = try! County(fips: countyFips, name: "mockCounty", state: "mockCountyState")
         inMemorySeriesDataset.importRows(from: threeDayCountySequence(forFips: countyFips))
 
         let day1 = IsoDate(year: 2020, month: 1, day: 1)

@@ -41,7 +41,7 @@ class NytDatasetTests: XCTestCase {
         XCTAssertEqual(mockLocations.addedLocations as? [County], expectedCounties)
 
         expectedCountyRows
-            .map { County(fips: $0.fips, name: $0.county!, state: $0.state) }
+            .compactMap { try? County(fips: $0.fips, name: $0.county, state: $0.state) }
             .forEach { expectedLocation in
                 XCTAssertTrue(mockLocations.addedLocations
                     .compactMap { $0 as? County }
@@ -102,10 +102,10 @@ class NytDatasetTests: XCTestCase {
                        deaths: 5)!
     ]
     let expectedCounties: [County] = [
-        County(fips: "36119", name: "Westchester", state: "New York"),
-        County(fips: "24013", name: "Carroll", state: "Maryland"),
-        County(fips: "51810", name: "Virginia Beach city", state: "Virginia")
-    ]
+        try? County(fips: "36119", name: "Westchester", state: "New York"),
+        try? County(fips: "24013", name: "Carroll", state: "Maryland"),
+        try? County(fips: "51810", name: "Virginia Beach city", state: "Virginia")
+        ].compactMap { $0 }
 }
 
 class MockLocations: LocationsDataset {
