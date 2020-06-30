@@ -38,7 +38,7 @@ class InMemorySeriesDataset: SeriesDataset {
         let deaths = rawLoadableRow.deaths
 
         var series = getSeries(for: location)
-        series.days[date] = [.cases: cases, .deaths: deaths]
+        series.setValues(to: [.cases: cases, .deaths: deaths], on: date)
         seriesByFips[location.fips] = series
     }
 
@@ -48,13 +48,13 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private func enrichWithNewCases(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        let dates = series.days.keys.sorted()
         var lastCount = 0
-        dates.forEach { date in
-            guard let currentCount = series.days[date]?[.cases] else {
+        series.dates.forEach { date in
+            guard let currentCount = series[.cases, on: date] else {
                 return
             }
-            result.days[date]?[.newCases] = currentCount - lastCount
+            result.set(.newCases, to: currentCount - lastCount, on: date)
+
             lastCount = currentCount
         }
         return result
@@ -62,8 +62,8 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private func enrichWithNewCaseAverage(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        let dateSet = series.days.keys.sorted().map { date in
-            (date: date, newCases: series.days[date]?[.newCases] ?? 0)
+        let dateSet = series.dates.map { date in
+            (date: date, newCases: series[.newCases, on: date] ?? 0)
         }.enumerated()
         dateSet.forEach {
             let minOffset = $0.offset - 6
@@ -77,7 +77,8 @@ class InMemorySeriesDataset: SeriesDataset {
             let average = sevenSet
                 .map { $0.element.newCases }
                 .sum() / 7
-            result.days[$0.element.date]?[.newCases7day] = average
+
+            result.set(.newCases7day, to: average, on: $0.element.date)
         }
         return result
     }

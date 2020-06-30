@@ -35,10 +35,9 @@ struct SeriesResponse: Content {
 
     init<SeriesType: Series>(_ series: SeriesType) {
         let location = LocationResponse(location: series.location)
-        let days = series.days.keys
-            .sorted()
+        let days = series.dates
             .compactMap { date in
-                DatePointResponse(date: date, values: series.days[date])
+                DatePointResponse(date: date, values: series[date])
         }
         self.init(location: location, days: days)
     }

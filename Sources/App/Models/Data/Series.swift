@@ -2,13 +2,42 @@ import Foundation
 
 protocol Series: Transformable {
     var location: Location { get }
-    var days: [IsoDate: Values] { get set } // TODO make nicer
+    var dates: [IsoDate] { get }
+
+    subscript(_ date: IsoDate) -> Values? { get }
+    subscript(_ valueType: ValueType, on date: IsoDate) -> Int? { get }
+
+    mutating func setValues(to values: Values, on date: IsoDate)
+    mutating func set(_ valueType: ValueType, to newValue: Int?, on date: IsoDate)
+}
+
+extension Series {
 }
 
 struct SimpleSeries: Series {
-    let location: Location
+    subscript(date: IsoDate) -> Values? {
+        return days[date]
+    }
 
-    var days: [IsoDate : Values] = [:]
+    mutating func setValues(to values: Values, on date: IsoDate) {
+        days[date] = values
+    }
+
+    mutating func set(_ valueType: ValueType, to newValue: Int?, on date: IsoDate) {
+        if days[date] == nil {
+            days[date] = Values()
+        }
+        days[date]?[valueType] = newValue
+    }
+
+    subscript(_ valueType: ValueType, on date: IsoDate) -> Int? {
+        return days[date]?[valueType]
+    }
+
+    let location: Location
+    var dates: [IsoDate] { days.keys.sorted() }
+
+    private var days: [IsoDate : Values] = [:]
 
     init?(location: Location?) {
         guard let location = location else {

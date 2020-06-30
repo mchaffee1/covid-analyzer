@@ -28,15 +28,15 @@ class InMemorySeriesDatasetTests: XCTestCase {
 
         let stateSeries = inMemorySeriesDataset.getSeries(forFips: stateFips)
 
-        XCTAssertEqual(stateSeries?.days.count, 8)
-        XCTAssertEqual(stateSeries?.days[day1]?[.newCases], 10)
-        XCTAssertEqual(stateSeries?.days[day7]?[.newCases7day], 10)
-        XCTAssertEqual(stateSeries?.days[day8]?[.newCases7day], 20)
+        XCTAssertEqual(stateSeries?.dates.count, 8)
+        XCTAssertEqual(stateSeries?[.newCases, on: day1], 10)
+        XCTAssertEqual(stateSeries?[.newCases7day, on: day7], 10)
+        XCTAssertEqual(stateSeries?[.newCases7day, on: day8], 20)
 
         let countySeries = inMemorySeriesDataset.getSeries(forFips: countyFips)
 
-        XCTAssertEqual(countySeries?.days.count, 3)
-        XCTAssertEqual(countySeries?.days[day1]?[.newCases], 15)
+        XCTAssertEqual(countySeries?.dates.count, 3)
+        XCTAssertEqual(countySeries?[.newCases, on: day1], 15)
     }
 
     /// MARK: - Helpers
