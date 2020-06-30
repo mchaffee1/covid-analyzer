@@ -1,6 +1,7 @@
 import Foundation
 
 enum LocationType: String {
+    case nation
     case state
     case county
 }

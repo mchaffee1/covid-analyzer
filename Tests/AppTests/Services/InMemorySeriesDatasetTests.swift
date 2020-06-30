@@ -15,7 +15,7 @@ class InMemorySeriesDatasetTests: XCTestCase {
 
     func testShouldBuildHappyPath() {
         let stateFips = "stateFips"
-        mockLocationsDataset.mockLocationForFips = State(fips: stateFips, name: "mock")
+        mockLocationsDataset.mockLocationForFips = try! State(fips: stateFips, name: "mock")
         inMemorySeriesDataset.importRows(from: eightDayStateSequence(forFips: stateFips))
 
         let countyFips = "countyFips"
