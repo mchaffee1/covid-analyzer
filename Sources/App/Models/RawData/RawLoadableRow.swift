@@ -1,15 +1,16 @@
 import Foundation
-//import SwiftCSV
 
 struct RawLoadableRow {
     let date: IsoDate
+    let county: String?
     let state: String
     let fips: String
     let cases: Int
     let deaths: Int
-    let locationType = LocationType.state
+    let locationType: LocationType
 
     init?(date: IsoDate?,
+          county: String? = nil,
           state: String?,
           fips: String?,
           cases: Int?,
@@ -22,10 +23,12 @@ struct RawLoadableRow {
                 return nil
         }
         self.date = date
+        self.county = county
         self.state = state
         self.fips = fips
         self.cases = cases
         self.deaths = deaths
+        self.locationType = county == nil ? .state : .county
     }
 }
 

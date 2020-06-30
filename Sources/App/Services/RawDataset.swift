@@ -2,23 +2,31 @@ import Foundation
 import SwiftCSV
 
 protocol RawDataset: Dataset {
-    var stateRows: [RawLoadableRow] { get }
+    var rows: [RawLoadableRow] { get }
 }
 
 class NytDataset: RawDataset {
     private typealias Class = NytDataset
-    private(set) var stateRows: [RawLoadableRow] = []
-
-    private let sourceFile: URL
+    private(set) var rows: [RawLoadableRow] = []
 
     public init(locations: LocationsDataset,
                 seriesDataset: SeriesDataset,
                 sourceFile customUrl: URL? = nil) throws {
-        self.sourceFile = customUrl ?? Class.resourceFileURL(forFilename: "us-states.csv")
-        self.stateRows = loadStates(from: sourceFile, intoLocations: locations, intoSeries: seriesDataset)
+        if let customSourceFile = customUrl {
+            self.rows = loadRows(from: customSourceFile, intoLocations: locations, intoSeries: seriesDataset)
+        } else {
+            self.rows = loadAllFiles(intoLocations: locations, intoSeries: seriesDataset)
+        }
     }
 
-    private func loadStates(from sourceUrl: URL,
+    private func loadAllFiles(intoLocations locations: LocationsDataset,
+                              intoSeries seriesDataset: SeriesDataset) -> [RawLoadableRow] {
+        ["us-states.csv", "us-counties.csv"]
+            .compactMap { self.resourceFileURL(forFilename: $0) }
+            .flatMap { self.loadRows(from: $0, intoLocations: locations, intoSeries: seriesDataset) }
+    }
+
+    func loadRows(from sourceUrl: URL,
                             intoLocations locations: LocationsDataset,
                             intoSeries seriesDataset: SeriesDataset) -> [RawLoadableRow] {
         guard let csv = try? CSV(url: sourceUrl) else {
@@ -29,18 +37,20 @@ class NytDataset: RawDataset {
         rows.forEach { row in
             locations.add(self.location(from: row))
         }
-        seriesDataset.build(from: rows)
+        seriesDataset.importRows(from: rows)
         return rows
     }
 
     private func rawLoadableRow(from csvRow: [String: String]) -> RawLoadableRow? {
         let date = IsoDate(isoString: csvRow["date"])
+        let county = csvRow["county"]
         let state = csvRow["state"]
         let fips = csvRow["fips"]
         let cases = Int(csvRow["cases"])
         let deaths = Int(csvRow["deaths"])
 
         return RawLoadableRow(date: date,
+                              county: county,
                               state: state,
                               fips: fips,
                               cases: cases,
@@ -51,6 +61,9 @@ class NytDataset: RawDataset {
         switch rawLoadableRow.locationType {
         case .state:
             return State(fips: rawLoadableRow.fips, name: rawLoadableRow.state)
+        case .county:
+            // TODO lose the bang
+            return County(fips: rawLoadableRow.fips, name: rawLoadableRow.county!, state: rawLoadableRow.state)
         }
     }
 }

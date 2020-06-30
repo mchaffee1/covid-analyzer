@@ -19,4 +19,3 @@ class InMemoryLocationsDataset: LocationsDataset {
 
     var all: [Location] { [Location](locations.values) }
 }
-

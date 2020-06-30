@@ -2,6 +2,7 @@ import Foundation
 
 enum LocationType: String {
     case state
+    case county
 }
 
 extension LocationType: Codable {}

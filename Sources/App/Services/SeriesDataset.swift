@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SeriesDataset {
-    func build(from rawDataset: [RawLoadableRow])
+    func importRows(from: [RawLoadableRow])
     func getSeries(forFips: String) -> SimpleSeries?
 }
 
@@ -14,8 +14,8 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private var seriesByFips: [String: SimpleSeries] = [:]
 
-    func build(from rawDataset: [RawLoadableRow]) {
-        rawDataset.forEach(importRow)
+    func importRows(from rows: [RawLoadableRow]) {
+        rows.forEach(importRow)
 
         seriesByFips.forEach { fips, series in // TODO this could still be nicer
             seriesByFips[fips] = series

@@ -14,23 +14,33 @@ class InMemorySeriesDatasetTests: XCTestCase {
     }
 
     func testShouldBuildHappyPath() {
-        let fips = "fips"
-        mockLocationsDataset.mockLocationForFips = State(fips: fips, name: "mock")
-        inMemorySeriesDataset.build(from: eightDaySequence(forFips: fips))
+        let stateFips = "stateFips"
+        mockLocationsDataset.mockLocationForFips = State(fips: stateFips, name: "mock")
+        inMemorySeriesDataset.importRows(from: eightDayStateSequence(forFips: stateFips))
+
+        let countyFips = "countyFips"
+        mockLocationsDataset.mockLocationForFips = County(fips: countyFips, name: "mockCounty", state: "mockCountyState")
+        inMemorySeriesDataset.importRows(from: threeDayCountySequence(forFips: countyFips))
+
         let day1 = IsoDate(year: 2020, month: 1, day: 1)
         let day7 = IsoDate(year: 2020, month: 1, day: 7)
         let day8 = IsoDate(year: 2020, month: 1, day: 8)
 
-        let series = inMemorySeriesDataset.getSeries(forFips: fips)
+        let stateSeries = inMemorySeriesDataset.getSeries(forFips: stateFips)
 
-        XCTAssertEqual(series?.days.count, 8)
-        XCTAssertEqual(series?.days[day1]?[.newCases], 10)
-        XCTAssertEqual(series?.days[day7]?[.newCases7day], 10)
-        XCTAssertEqual(series?.days[day8]?[.newCases7day], 20)
+        XCTAssertEqual(stateSeries?.days.count, 8)
+        XCTAssertEqual(stateSeries?.days[day1]?[.newCases], 10)
+        XCTAssertEqual(stateSeries?.days[day7]?[.newCases7day], 10)
+        XCTAssertEqual(stateSeries?.days[day8]?[.newCases7day], 20)
+
+        let countySeries = inMemorySeriesDataset.getSeries(forFips: countyFips)
+
+        XCTAssertEqual(countySeries?.days.count, 3)
+        XCTAssertEqual(countySeries?.days[day1]?[.newCases], 15)
     }
 
     /// MARK: - Helpers
-    func eightDaySequence(forState state: String? = nil, forFips fips: String? = nil) -> [RawLoadableRow] {
+    func eightDayStateSequence(forState state: String? = nil, forFips fips: String? = nil) -> [RawLoadableRow] {
         let state = state ?? "myState"
         let fips = fips ?? "myFips"
         return [
@@ -74,6 +84,32 @@ class InMemorySeriesDatasetTests: XCTestCase {
                            fips: fips,
                            cases: 150,
                            deaths: 80),
+            ].compactMap { $0 }
+    }
+
+    func threeDayCountySequence(forCounty county: String? = nil, inState state: String? = nil, forFips fips: String? = nil) -> [RawLoadableRow] {
+        let county = county ?? "county"
+        let state = state ?? "state"
+        let fips = fips ?? "fips"
+        return [
+            RawLoadableRow(date: IsoDate(isoString: "2020-01-01"),
+                           county: county,
+                           state: state,
+                           fips: fips,
+                           cases: 15,
+                           deaths: 15),
+            RawLoadableRow(date: IsoDate(isoString: "2020-01-02"),
+                           county: county,
+                           state: state,
+                           fips: fips,
+                           cases: 30,
+                           deaths: 0),
+            RawLoadableRow(date: IsoDate(isoString: "2020-01-03"),
+                           county: county,
+                           state: state,
+                           fips: fips,
+                           cases: 45,
+                           deaths: 10)
             ].compactMap { $0 }
     }
 }
