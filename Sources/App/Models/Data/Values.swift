@@ -7,7 +7,7 @@ enum ValueType: String {
     case deaths
     case newCases
     case newCases7day
+    case population
 }
 
 extension ValueType: Codable {}
-
