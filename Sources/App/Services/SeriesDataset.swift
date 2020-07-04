@@ -62,23 +62,19 @@ class InMemorySeriesDataset: SeriesDataset {
 
     private func enrichWithNewCaseAverage(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        let dateSet = series.dates.map { date in
-            (date: date, newCases: series[.newCases, on: date] ?? 0)
-        }.enumerated()
-        dateSet.forEach {
-            let minOffset = $0.offset - 6
-            let maxOffset = $0.offset
-            let sevenSet = dateSet.filter { day in
-                day.offset >= minOffset && day.offset <= maxOffset
-            }
-            guard sevenSet.count == 7 else {
+        var lastSeven = Queue<Int>(capacity: 7)
+
+        series.dates.forEach { date in
+            guard let currentCount = series[.newCases, on: date] else {
                 return
             }
-            let average = sevenSet
-                .map { $0.element.newCases }
-                .sum() / 7
+            lastSeven.enqueue(currentCount)
 
-            result.set(.newCases7day, to: average, on: $0.element.date)
+            guard lastSeven.count == 7 else { return }
+
+            let average = lastSeven.values.sum() / 7
+
+            result.set(.newCases7day, to: average, on: date)
         }
         return result
     }
