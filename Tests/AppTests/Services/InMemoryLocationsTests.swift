@@ -29,12 +29,3 @@ class InMemoryLocationsTests: XCTestCase {
         XCTAssertNil(inMemoryLocations.location(forFips: "larry"))
     }
 }
-
-struct MockLocation: Location {
-    var type: LocationType = .state
-
-    let fips: String
-    let name: String
-}
-
-extension MockLocation: Equatable {}

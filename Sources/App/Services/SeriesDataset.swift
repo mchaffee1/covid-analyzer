@@ -38,7 +38,7 @@ class InMemorySeriesDataset: SeriesDataset {
         let deaths = rawLoadableRow.deaths
 
         var series = getSeries(for: location)
-        series.setValues(to: [.cases: cases, .deaths: deaths], on: date)
+        series.set(values: [.cases: cases, .deaths: deaths], on: date)
         seriesByFips[location.fips] = series
     }
 
