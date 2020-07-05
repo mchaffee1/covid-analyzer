@@ -1,6 +1,6 @@
 import Foundation
 
-struct CensusState: Decodable, Equatable {
+struct CensusLocation: Decodable, Equatable {
     let fips: String
     let name: String
     private let pop: String

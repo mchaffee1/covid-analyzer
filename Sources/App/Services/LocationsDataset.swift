@@ -1,4 +1,5 @@
 import Foundation
+import NIO
 
 protocol LocationsDataset {
     var all: [Location] { get }
@@ -15,7 +16,15 @@ class InMemoryLocationsDataset: LocationsDataset {
         locations[location.fips] = location
     }
 
+    func hydratePopulation(from populationProvider: PopulationProvider) {
+
+    }
+
     private var locations: [String: Location] = [:]
 
     var all: [Location] { [Location](locations.values) }
+}
+
+protocol PopulationProvider {
+
 }
