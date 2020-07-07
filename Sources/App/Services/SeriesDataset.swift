@@ -20,7 +20,7 @@ class InMemorySeriesDataset: SeriesDataset {
         seriesByFips.forEach { fips, series in // TODO this could still be nicer
             seriesByFips[fips] = series
                 .transform(with: self.enrichWithNewCases)
-                .transform(with: self.enrichWithNewCaseAverage)
+                .transform(with: self.enrichWithSevenDayValues)
         }
     }
 
@@ -60,7 +60,7 @@ class InMemorySeriesDataset: SeriesDataset {
         return result
     }
 
-    private func enrichWithNewCaseAverage(series: SimpleSeries) -> SimpleSeries {
+    private func enrichWithSevenDayValues(series: SimpleSeries) -> SimpleSeries {
         var result = series
         var lastSeven = Queue<Int>(capacity: 7)
 
@@ -72,9 +72,11 @@ class InMemorySeriesDataset: SeriesDataset {
 
             guard lastSeven.count == 7 else { return }
 
-            let average = lastSeven.values.sum() / 7
+            let total = lastSeven.values.sum()
+            let average = total / 7
 
-            result.set(.newCases7day, to: average, on: date)
+            result.set(.newCases7dayAverage, to: average, on: date)
+            result.set(.newCases7dayTotal, to: total, on: date)
         }
         return result
     }

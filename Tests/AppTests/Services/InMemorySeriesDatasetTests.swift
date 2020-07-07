@@ -30,8 +30,10 @@ class InMemorySeriesDatasetTests: XCTestCase {
 
         XCTAssertEqual(stateSeries?.dates.count, 8)
         XCTAssertEqual(stateSeries?[.newCases, on: day1], 10)
-        XCTAssertEqual(stateSeries?[.newCases7day, on: day7], 10)
-        XCTAssertEqual(stateSeries?[.newCases7day, on: day8], 20)
+        XCTAssertEqual(stateSeries?[.newCases7dayAverage, on: day7], 10)
+        XCTAssertEqual(stateSeries?[.newCases7dayTotal, on: day7], 70)
+        XCTAssertEqual(stateSeries?[.newCases7dayAverage, on: day8], 20)
+        XCTAssertEqual(stateSeries?[.newCases7dayTotal, on: day8], 140)
 
         let countySeries = inMemorySeriesDataset.getSeries(forFips: countyFips)
 
