@@ -33,6 +33,8 @@ class NytDataset: RawDataset {
     private func loadRows(from sourceUrl: URL,
                             intoLocations locations: LocationsDataset,
                             intoSeries seriesDataset: SeriesDataset) -> [RawLoadableRow] {
+        print("Loading rows from \(sourceUrl)")
+
         guard let csv = try? CSV(url: sourceUrl) else {
             return []
         }
