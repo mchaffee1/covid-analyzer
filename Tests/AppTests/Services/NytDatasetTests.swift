@@ -71,6 +71,30 @@ class NytDatasetTests: XCTestCase {
         }
     }
 
+    func testShouldGiveNYCSpecialTreatmentBecauseOfCourse() {
+        guard let fileUrl = testFileUrl(for: "nyc.csv") else {
+            XCTFail("could not get fileUrl")
+            return
+        }
+        let mockLocations = MockLocations()
+        let mockSeriesDataset = MockSeriesDataset()
+        let expectedRow = RawLoadableRow(date: IsoDate(year: 2020, month: 06, day: 26),
+                                         county: "New York City",
+                                         state: "New York",
+                                         fips: "nyc",
+                                         cases: 218799,
+                                         deaths: 21893)
+        let expectedCounty = try! County(fips: "nyc", name: "New York City", state: "New York")
+
+        let rows = try? NytDataset(locations: mockLocations, seriesDataset: mockSeriesDataset, sourceFile: fileUrl).rows
+
+        XCTAssertEqual(rows, [expectedRow!])
+        XCTAssertEqual(mockLocations.addedLocations as? [County], [expectedCounty])
+        XCTAssertTrue(mockLocations.addedLocations
+            .compactMap { $0 as? County }
+            .contains(expectedCounty))
+    }
+
     /// MARK: - Helpers
     /// MARK: File Stub Expectations
     let expectedStateRows: [RawLoadableRow] = [

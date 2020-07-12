@@ -54,7 +54,7 @@ class NytDataset: RawDataset {
         let date = IsoDate(isoString: csvRow["date"])
         let county = csvRow["county"]
         let state = csvRow["state"]
-        let fips = csvRow["fips"] ?? defaultFips
+        let fips = getFips(for: csvRow, default: defaultFips)
         let cases = Int(csvRow["cases"])
         let deaths = Int(csvRow["deaths"])
 
@@ -64,6 +64,21 @@ class NytDataset: RawDataset {
                               fips: fips,
                               cases: cases,
                               deaths: deaths)
+    }
+
+    fileprivate func getFips(for csvRow: [String : String], default defaultFips: String?) -> String? {
+        return specialFips(for: csvRow)
+            ?? csvRow["fips"]
+            ?? defaultFips
+    }
+
+    private func specialFips(for csvRow: [String: String]) -> String? {
+        guard csvRow["fips"]?.isEmpty ?? true,
+            let county = csvRow["county"],
+            county == "New York City" else {
+                return nil
+        }
+        return "nyc"
     }
 
     private func location(from rawLoadableRow: RawLoadableRow) throws -> Location {
