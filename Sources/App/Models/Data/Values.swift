@@ -8,6 +8,7 @@ enum ValueType: String {
     case newCases
     case newCases7dayAverage
     case newCases7dayTotal
+    case newDeaths
     case population
 }
 

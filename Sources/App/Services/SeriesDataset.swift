@@ -19,7 +19,7 @@ class InMemorySeriesDataset: SeriesDataset {
 
         seriesByFips.forEach { fips, series in // TODO this could still be nicer
             seriesByFips[fips] = series
-                .transform(with: self.enrichWithNewCases)
+                .transform(with: self.enrichWithNewCasesAndDeaths)
                 .transform(with: self.enrichWithSevenDayValues)
         }
     }
@@ -46,16 +46,20 @@ class InMemorySeriesDataset: SeriesDataset {
         return seriesByFips[fips] ?? SimpleSeries(location: locations.location(forFips: fips))
     }
 
-    private func enrichWithNewCases(series: SimpleSeries) -> SimpleSeries {
+    private func enrichWithNewCasesAndDeaths(series: SimpleSeries) -> SimpleSeries {
         var result = series
-        var lastCount = 0
+        var lastCaseCount = 0
+        var lastDeathCount = 0
         series.dates.forEach { date in
-            guard let currentCount = series[.cases, on: date] else {
-                return
+            if let currentCount = series[.cases, on: date] {
+                result.set(.newCases, to: currentCount - lastCaseCount, on: date)
+                lastCaseCount = currentCount
             }
-            result.set(.newCases, to: currentCount - lastCount, on: date)
 
-            lastCount = currentCount
+            if let currentDeathCount = series[.deaths, on: date] {
+                result.set(.newDeaths, to: currentDeathCount - lastDeathCount, on: date)
+                lastDeathCount = currentDeathCount
+            }
         }
         return result
     }

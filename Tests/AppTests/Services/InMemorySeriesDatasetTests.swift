@@ -23,6 +23,8 @@ class InMemorySeriesDatasetTests: XCTestCase {
         inMemorySeriesDataset.importRows(from: threeDayCountySequence(forFips: countyFips))
 
         let day1 = IsoDate(year: 2020, month: 1, day: 1)
+        let day2 = IsoDate(year: 2020, month: 1, day: 2)
+        let day4 = IsoDate(year: 2020, month: 1, day: 4)
         let day7 = IsoDate(year: 2020, month: 1, day: 7)
         let day8 = IsoDate(year: 2020, month: 1, day: 8)
 
@@ -34,6 +36,9 @@ class InMemorySeriesDatasetTests: XCTestCase {
         XCTAssertEqual(stateSeries?[.newCases7dayTotal, on: day7], 70)
         XCTAssertEqual(stateSeries?[.newCases7dayAverage, on: day8], 20)
         XCTAssertEqual(stateSeries?[.newCases7dayTotal, on: day8], 140)
+
+        XCTAssertEqual(stateSeries?[.newDeaths, on: day2], 0)
+        XCTAssertEqual(stateSeries?[.newDeaths, on: day4], 5)
 
         let countySeries = inMemorySeriesDataset.getSeries(forFips: countyFips)
 
