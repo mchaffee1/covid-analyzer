@@ -13,3 +13,7 @@ protocol Location: Encodable {
     var fips: String { get }
     var name: String { get }
 }
+
+extension Location {
+    static var empty: Location { State.empty }
+}

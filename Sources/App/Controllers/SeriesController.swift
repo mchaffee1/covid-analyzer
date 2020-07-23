@@ -9,16 +9,16 @@ class SeriesController {
             throw Abort(.notFound, reason: "Could not retrieve series for fips \(fips)")
         }
 
-        let response = SeriesResponse(series)
+        let response = try SeriesResponse(series)
             .filtered(with: self.getFilters(for: request))
         return response
     }
 
     private typealias ResponseFilter = (DatePointResponse)->(Bool)
 
-    private func getFilters(for request: Request) -> ResponseFilter {
+    private func getFilters(for request: Request) throws -> ResponseFilter {
         var filters: [ResponseFilter] = []
-        if let startDate = IsoDate(isoString: request.query[String.self, at: "startDate"]) {
+        if let startDate = try request.query.getStartDate() {
             filters.append({ $0.date >= startDate })
         }
         return { response in
@@ -70,14 +70,5 @@ struct DatePointResponse: Content {
             }
             return result
         }()
-    }
-}
-
-extension QueryContainer {
-    func getFips() throws -> String {
-        guard let result = self[String.self, at: "fips"] else {
-            throw Abort(.badRequest, reason: "fips parameter is required")
-        }
-        return result
     }
 }

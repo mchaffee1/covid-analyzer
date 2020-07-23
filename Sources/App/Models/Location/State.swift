@@ -3,6 +3,8 @@ import Foundation
 struct State: Location {
     let type: LocationType = .state
 
+    static let empty = State(fips: "xx", name: "No Location")
+
     let fips: String
     let name: String
     let population: Int?
@@ -11,6 +13,10 @@ struct State: Location {
         guard let fips = fips, let name = name else {
             throw "Attempted incomplete initialization of State"
         }
+        self.init(fips: fips, name: name, population: population)
+    }
+
+    init(fips: String, name: String, population: Int? = nil) {
         self.fips = fips
         self.name = name
         self.population = population
@@ -22,8 +28,8 @@ struct State: Location {
         case population
     }
 
-    func with(population: Int) throws -> State {
-        return try State(fips: self.fips, name: self.name, population: population)
+    func with(population: Int) -> State {
+        return State(fips: self.fips, name: self.name, population: population)
     }
 }
 

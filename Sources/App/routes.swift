@@ -11,4 +11,7 @@ public func routes(_ router: Router) throws {
 
     let seriesController = SeriesController()
     router.get("series", use: seriesController.index)
+
+    let singleSeriesController = SingleSeriesController()
+    router.get("singleSeries", use: singleSeriesController.index)
 }

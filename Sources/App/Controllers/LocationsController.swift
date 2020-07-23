@@ -33,4 +33,6 @@ struct LocationResponse: Location, Content {
         self.fips = location.fips
         self.name = location.name
     }
+
+    static let empty = LocationResponse(location: State.empty)
 }
